@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Sistema de Produtos</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eaf8ec;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2e7d32;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        button {
+            background-color: #2e7d32;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1b5e20;
+        }
+
+        .link {
+            display: block;
+            margin-top: 10px;
+            color: #2e7d32;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .g_id_signin {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Login</h1>
+
+        <!-- Login Manual -->
+        <div>
+            <input type="email" id="email" placeholder="Email">
+            <br>
+            <input type="password" id="password" placeholder="Senha">
+            <br>
+            <button onclick="loginManual()">Entrar</button>
+            <button onclick="cadastro()">Cadastrar</button>
+            <br>
+            <span class="link" onclick="esqueceuSenha()">Esqueceu sua senha?</span>
+        </div>
+
+        <hr style="margin: 20px 0;">
+
+        <!-- Login Google OAuth -->
+        <div id="g_id_onload" data-client_id="955148601648-r8b0ia5t1kf81ncu4dts2oq3ojjrkb4i.apps.googleusercontent.com"
+            data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse"
+            data-auto_prompt="false">
+        </div>
+
+        <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="sign_in_with"
+            data-size="large">
+        </div>
+    </div>
+
+    <script>
+        function loginManual() {
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('password').value;
+
+            if (!email || !senha) {
+                alert("Preencha email e senha.");
+                return;
+            }
+
+            fetch('http://localhost:3000/usuarios/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        localStorage.setItem('email', data.usuario.email);
+                        window.location.href = 'dashboard.html';
+                    }
+                })
+                .catch(() => {
+                    alert('Erro de conexão com o servidor.');
+                });
+        }
+
+        function cadastro() {
+            window.location.href = 'cadastro.html';
+        }
+
+        function esqueceuSenha() {
+            window.location.href = 'recuperar-senha.html';
+        }
+
+        // Callback do login com Google
+        function handleCredentialResponse(response) {
+            const responsePayload = parseJwt(response.credential);
+            localStorage.setItem('email', responsePayload.email);
+            window.location.href = "dashboard.html";
+        }
+
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+    </script>
+</body>
+
+</html>

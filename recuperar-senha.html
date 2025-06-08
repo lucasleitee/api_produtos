@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Recuperar Senha</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eaf8ec;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 400px;
+            text-align: center;
+        }
+        h1 {
+            color: #2e7d32;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #2e7d32;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1b5e20;
+        }
+        .link {
+            display: block;
+            margin-top: 10px;
+            color: #2e7d32;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Recuperar Senha</h1>
+        <p>Digite seu email para recuperar sua senha.</p>
+        <input type="email" id="email" placeholder="Email">
+        <br>
+        <button onclick="recuperarSenha()">Enviar</button>
+        <br>
+        <span class="link" onclick="voltar()">Voltar ao Login</span>
+    </div>
+
+    <script>
+        function recuperarSenha() {
+            const email = document.getElementById('email').value;
+
+            if (!email) {
+                alert('Digite seu email.');
+                return;
+            }
+
+            // Aqui você chamaria sua API de recuperação de senha
+            fetch('http://localhost:3000/recuperar-senha', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email})
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Se o email existir, você receberá instruções para redefinir sua senha.');
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Erro ao enviar solicitação.');
+                }
+            })
+            .catch(() => alert('Erro de conexão com o servidor.'));
+        }
+
+        function voltar() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
