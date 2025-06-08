@@ -80,6 +80,9 @@ DB_PASSWORD=sua_senha_aqui
 DB_HOST=localhost
 DB_PORT=5432
 
+Arquivo index.html
+Alterar g_id_onload para o token gerando em conta google
+
 Inicialização da API local
 npm install
 npm run dev
